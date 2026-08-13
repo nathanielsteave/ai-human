@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="midnight">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Abby - Pacar AI Chindo Cantik & Manja 💕</title>
+  <meta name="description" content="Aplikasi AI Girlfriend Chindo 21 tahun bernama Abby yang manis, perhatian, manja, dan seru diajak chatting layaknya kehidupan nyata.">
+  
+  <!-- PWA Manifest & Theme Color -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#ff2a6d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="/assets/avatar.png">
+
+  <!-- Google Fonts: Plus Jakarta Sans & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+  <div class="app-background">
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+    <div class="glow-orb orb-3"></div>
+  </div>
+
+  <!-- PIN LOCK SCREEN MODAL (PERSONAL AUTHENTICATION) -->
+  <div class="modal-backdrop modal-lock-backdrop" id="pinLockModal" style="display: none;">
+    <div class="modal-content glass-panel lock-content">
+      <div class="lock-avatar-wrapper">
+        <img src="/assets/avatar.png" alt="Abby" class="lock-avatar">
+        <span class="lock-icon-badge">🔒</span>
+      </div>
+      <h2 class="lock-title">Ruang Pribadi Abby 💕</h2>
+      <p class="lock-subtitle">Masukkan PIN 4-digit untuk membuka obrolan mesra kita</p>
+      
+      <div class="pin-inputs-row" id="pinInputsRow">
+        <input type="password" maxlength="1" class="pin-digit" autofocus inputmode="numeric">
+        <input type="password" maxlength="1" class="pin-digit" inputmode="numeric">
+        <input type="password" maxlength="1" class="pin-digit" inputmode="numeric">
+        <input type="password" maxlength="1" class="pin-digit" inputmode="numeric">
+      </div>
+      <p class="pin-error-text" id="pinErrorText" style="display: none;">PIN salah, coba lagi ya beb 🥺</p>
+      <button type="button" class="btn-primary" id="btnSubmitPin">Buka Obrolan 💕</button>
+    </div>
+  </div>
+
+  <!-- LIVE VIDEO CALL (VC) SIMULATION FULLSCREEN MODAL -->
+  <div class="modal-backdrop modal-vc-backdrop" id="vcCallModal" style="display: none;">
+    <div class="vc-fullscreen-container">
+      <div class="vc-video-feed">
+        <div class="vc-avatar-live-wrapper">
+          <img src="/assets/avatar.png" alt="Abby VC" class="vc-avatar-live" id="vcAvatarLive">
+          <div class="vc-eyelid-overlay" id="vcEyelidOverlay"></div>
+          <div class="vc-live-glow"></div>
+        </div>
+        <div class="vc-calling-badge" id="vcCallingBadge">📞 Memanggil... 💕</div>
+        <div class="vc-timer-badge" id="vcTimerBadge" style="display: none;">00:00</div>
+      </div>
+
+      <!-- Small User PIP Cam -->
+      <div class="vc-user-pip">
+        <span class="pip-icon">👤</span>
+        <span class="pip-label">Kamu</span>
+      </div>
+
+      <!-- VC Control Actions Bar -->
+      <div class="vc-controls-bar">
+        <button type="button" class="btn-vc-control" id="btnVcMute" title="Mute Suara">🎙️</button>
+        <button type="button" class="btn-vc-control btn-vc-end" id="btnVcEnd" title="Akhiri Panggilan">📞</button>
+        <button type="button" class="btn-vc-control" id="btnVcHeart" title="Kirim Cinta">💖</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EPIC NARRATIVE CUTSCENE MODAL -->
+  <div class="modal-backdrop modal-cutscene-backdrop" id="cutsceneModal" style="display: none;">
+    <div class="cutscene-card glass-panel">
+      <div class="cutscene-badge-icon" id="cutsceneIcon">👑</div>
+      <h2 class="cutscene-title" id="cutsceneTitle">Milestone Unlocked!</h2>
+      <p class="cutscene-narration" id="cutsceneNarration">...</p>
+      <button type="button" class="btn-primary" id="btnContinueCutscene">Lanjutkan Cerita Cinta 💕</button>
+    </div>
+  </div>
+
+  <div class="app-container" id="mainAppContainer">
+    <!-- SIDEBAR (PROFILE, HUD, & GAMEPLAY DASHBOARD) -->
+    <aside class="profile-sidebar" id="profileSidebar">
+      <div class="profile-card glass-panel">
+        <!-- Interactive Live Avatar Stage -->
+        <div class="profile-avatar-container" id="avatarInteractiveContainer" title="Klik untuk bermanja-manja 💕">
+          <div class="avatar-glow-ring" id="avatarGlowRing"></div>
+          <img src="/assets/avatar.png" alt="Avatar" class="profile-avatar" id="sidebarAvatar">
+          <div class="avatar-eyelid-overlay" id="avatarEyelid"></div>
+          <div class="avatar-blush-overlay" id="avatarBlush"></div>
+          <div class="avatar-heart-burst" id="avatarHeartBurst"></div>
+          <span class="status-indicator online pulse" id="avatarStatusDot"></span>
+          <span class="avatar-mood-emoji-badge" id="avatarMoodBadge">😏</span>
+        </div>
+        
+        <h2 class="profile-name"><span id="sidebarCharName">Abby</span> <span class="badge-chindo" id="sidebarCharBadge">21 thn • Chindo</span></h2>
+        <p class="profile-bio" id="profileBio">"Cece kesayangan kamu yang paling manja & bucin 💕"</p>
+
+        <!-- PMS Status Indicator (If Active) -->
+        <div class="pms-status-badge" id="pmsStatusBadge" style="display: none;">
+          <span>🌸 Lagi Fase PMS (Kram & Butuh Dimanja 🥺)</span>
+        </div>
+
+        <!-- Dynamic Real-Time Activity Status -->
+        <div class="activity-status-box" id="activityStatusBox">
+          <span class="activity-dot"></span>
+          <span class="activity-text" id="activityStatusText">Lagi santai di kamar nungguin chat kamu 💖</span>
+        </div>
+
+        <!-- Dynamic Mood Badge -->
+        <div class="mood-container">
+          <span class="mood-label">Mood:</span>
+          <span class="mood-pill" id="currentMoodBadge">
+            <span class="mood-emoji">😏</span> <span id="currentMoodText">Lagi Flirty & Manja</span>
+          </span>
+        </div>
+
+        <!-- 2-Axis Emotional State Matrix HUD -->
+        <div class="emotion-matrix-box" id="emotionMatrixBox">
+          <div class="emotion-matrix-header">
+            <span class="emotion-matrix-title">Matrix Emosi 🎭</span>
+            <span class="emotion-label-text" id="emotionLabelText">Flirty & Manja</span>
+          </div>
+          <div class="emotion-bars-grid">
+            <div class="emotion-bar-item">
+              <span class="emo-bar-label">Valence (Mood):</span>
+              <div class="emo-track">
+                <div class="emo-fill" id="valenceFill" style="width: 80%;"></div>
+              </div>
+            </div>
+            <div class="emotion-bar-item">
+              <span class="emo-bar-label">Arousal (Gairah):</span>
+              <div class="emo-track">
+                <div class="emo-fill emo-arousal" id="arousalFill" style="width: 70%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Relationship / Affection Meter -->
+        <div class="affection-card">
+          <div class="affection-header">
+            <span class="affection-title">Love Meter ❤️</span>
+            <span class="affection-stage" id="affectionStageText">Bucin Akut 💖👑</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="affectionProgressFill" style="width: 100%;"></div>
+          </div>
+          <div class="affection-footer">
+            <span class="affection-pts" id="affectionPtsText">100 / 100 Pts</span>
+            <span class="affection-perk" id="affectionPerkText">Milik kamu seutuhnya (Unlocked All) ✨</span>
+          </div>
+        </div>
+
+        <!-- Sidebar Actions & Gameplay Menus -->
+        <div class="sidebar-actions">
+          <button class="btn-sidebar btn-highlight" id="btnOpenCharacterCreator">
+            <span class="btn-icon">🎭</span>
+            <span>Custom Character Creator</span>
+          </button>
+          <button class="btn-sidebar btn-highlight" id="btnOpenGiftsModal">
+            <span class="btn-icon">🎁</span>
+            <span>Kirim Hadiah</span>
+          </button>
+          <button class="btn-sidebar btn-highlight" id="btnOpenDateModal">
+            <span class="btn-icon">🏖️</span>
+            <span>Kencan Virtual (Mini-Game)</span>
+          </button>
+          <button class="btn-sidebar" id="btnOpenAnalyticsModal">
+            <span class="btn-icon">📊</span>
+            <span>Analitik Hubungan Pribadi</span>
+          </button>
+          <button class="btn-sidebar" id="btnOpenCustomPAPModal">
+            <span class="btn-icon">✨</span>
+            <span>Minta Baju / Pose Khusus</span>
+          </button>
+          <button class="btn-sidebar" id="btnOpenAchievementsModal">
+            <span class="btn-icon">🏆</span>
+            <span>Milestone & Achievements</span>
+          </button>
+          <button class="btn-sidebar" id="btnOpenMemories">
+            <span class="btn-icon">🧠</span>
+            <span>Ingatan (<span id="memoriesCount">1</span> Memori)</span>
+          </button>
+          <button class="btn-sidebar" id="btnOpenGallery">
+            <span class="btn-icon">📸</span>
+            <span>Galeri PAP (<span id="unlockedPhotosCount">4</span> Foto)</span>
+          </button>
+          <button class="btn-sidebar" id="btnOpenSettings">
+            <span class="btn-icon">⚙️</span>
+            <span>Pengaturan & Hubungan</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CHAT INTERFACE -->
+    <main class="chat-main glass-panel">
+      <!-- Chat Header -->
+      <header class="chat-header">
+        <div class="chat-header-left">
+          <button class="btn-icon-mobile" id="btnToggleSidebar" aria-label="Toggle Profile">
+            <span class="avatar-mini-wrapper" id="headerAvatarWrapper">
+              <img src="/assets/avatar.png" alt="Avatar" class="avatar-mini" id="headerAvatarImg">
+              <span class="mini-status online" id="headerStatusDot"></span>
+            </span>
+          </button>
+          <div class="chat-header-info">
+            <div class="chat-title-row">
+              <h1 class="chat-title" id="headerCharName">Abby 💕</h1>
+              <span class="chindo-tag" id="headerRelationshipBadge">Baru Kenal 🌸</span>
+              <span class="thread-pill" id="headerThreadPill" title="Topik Aktif">💬 Kenalan</span>
+            </div>
+            <p class="chat-status" id="chatHeaderStatus">Online • Lagi nungguin chat kamu ✨</p>
+          </div>
+        </div>
+
+        <div class="chat-header-actions">
+          <!-- Persona Quick Switch Dropdown -->
+          <select id="selectHeaderPersona" class="header-persona-select" title="Ganti Persona Mode">
+            <option value="manja" selected>💖 Mode Manja</option>
+            <option value="oneesan">🍷 Mode Onee-san</option>
+            <option value="tsundere">😤 Mode Tsundere</option>
+            <option value="yandere">🔪 Mode Yandere</option>
+          </select>
+
+          <!-- PWA Install Button (Shown if browser supports install prompt) -->
+          <button class="btn-round btn-highlight-subtle" id="btnInstallPWA" title="Install Aplikasi ke Layar Utama (PWA) 📲" style="display: none;">
+            <span>📲</span>
+          </button>
+
+          <button class="btn-round btn-highlight-subtle" id="btnVideoCall" title="Video Call (VC) 📞">
+            <span>📞</span>
+          </button>
+          <button class="btn-round" id="btnToggleAmbient" title="Suara Latar Suasana (Ambient 🌧️/☕)">
+            <span id="ambientIcon">🎧</span>
+          </button>
+          <button class="btn-round" id="btnHeaderGift" title="Kirim Hadiah 🎁">
+            <span>🎁</span>
+          </button>
+          <button class="btn-round" id="btnHeaderDate" title="Kencan Virtual 🏖️">
+            <span>🏖️</span>
+          </button>
+          <button class="btn-round" id="btnThemeQuick" title="Ganti Tema Tampilan">
+            <span id="headerThemeIcon">🌙</span>
+          </button>
+          <button class="btn-round" id="btnHeaderCustomPAP" title="Minta Baju / Pose Khusus">
+            <span>✨</span>
+          </button>
+          <button class="btn-round" id="btnHeaderMemories" title="Ingatan Tentang Kamu">
+            <span>🧠</span>
+          </button>
+          <button class="btn-round" id="btnGalleryQuick" title="Lihat Galeri PAP">
+            <span>📷</span>
+          </button>
+          <button class="btn-round" id="btnClearChat" title="Hapus Riwayat Chat">
+            <span>🗑️</span>
+          </button>
+          <button class="btn-round" id="btnSettingsQuick" title="Pengaturan">
+            <span>⚙️</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Chat Messages Container -->
+      <div class="chat-stream" id="chatStream">
+        <!-- Messages appended dynamically -->
+      </div>
+
+      <!-- Quick Topics Chips Bar -->
+      <div class="quick-topics-wrapper">
+        <div class="quick-topics" id="quickTopicsBar">
+          <!-- Topics rendered dynamically -->
+        </div>
+      </div>
+
+      <!-- Chat Input Area -->
+      <footer class="chat-footer">
+        <!-- Quoted Message Reply Preview Box -->
+        <div class="reply-preview-container" id="replyPreviewContainer" style="display: none;">
+          <div class="reply-preview-content">
+            <div class="reply-preview-bar"></div>
+            <div class="reply-preview-text-box">
+              <span class="reply-preview-sender" id="replyPreviewSender">Membalas:</span>
+              <p class="reply-preview-text" id="replyPreviewText">...</p>
+            </div>
+          </div>
+          <button type="button" class="btn-close-reply" id="btnCloseReplyPreview" aria-label="Batal Balas">&times;</button>
+        </div>
+
+        <!-- Voice Note Recording Live HUD -->
+        <div class="voice-recording-hud" id="voiceRecordingHUD" style="display: none;">
+          <div class="recording-indicator-pulse"></div>
+          <span class="recording-timer" id="recordingTimer">00:00</span>
+          <div class="recording-waveforms" id="recordingWaveforms">
+            <span class="wave-bar"></span>
+            <span class="wave-bar"></span>
+            <span class="wave-bar"></span>
+            <span class="wave-bar"></span>
+            <span class="wave-bar"></span>
+            <span class="wave-bar"></span>
+            <span class="wave-bar"></span>
+            <span class="wave-bar"></span>
+          </div>
+          <span class="recording-tip">Bicara sekarang...</span>
+          <button type="button" class="btn-cancel-recording" id="btnCancelRecording" title="Batal Rekam">✕</button>
+          <button type="button" class="btn-finish-recording" id="btnFinishRecording" title="Kirim Voice Note">✓</button>
+        </div>
+
+        <!-- Chat Form -->
+        <form class="chat-form" id="chatForm">
+          <button type="button" class="btn-action-input" id="btnVoiceNote" title="Kirim Voice Note (VN) Suara">
+            <span>🎙️</span>
+          </button>
+          <button type="button" class="btn-action-input" id="btnMicInput" title="Dikte Suara ke Teks (Mic)">
+            <span>🎤</span>
+          </button>
+          <input 
+            type="text" 
+            id="messageInput" 
+            class="chat-input" 
+            placeholder="Ketik pesan buat pacar tersayang..." 
+            autocomplete="off" 
+            maxlength="800"
+          >
+          <button type="submit" class="btn-send" id="btnSendMessage" title="Kirim Pesan">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+          </button>
+        </form>
+      </footer>
+    </main>
+  </div>
+
+  <!-- FLOATING EMOJI REACTION POPUP -->
+  <div class="emoji-reaction-popup" id="emojiReactionPopup" style="display: none;">
+    <button class="btn-react-emoji" data-emoji="❤️">❤️</button>
+    <button class="btn-react-emoji" data-emoji="🔥">🔥</button>
+    <button class="btn-react-emoji" data-emoji="😂">😂</button>
+    <button class="btn-react-emoji" data-emoji="🥺">🥺</button>
+    <button class="btn-react-emoji" data-emoji="💋">💋</button>
+    <button class="btn-react-emoji" data-emoji="😮">😮</button>
+  </div>
+
+  <!-- MODAL: RELATIONSHIP ANALYTICS (100% PRIVATE LOCAL DASHBOARD) -->
+  <div class="modal-backdrop" id="analyticsModal">
+    <div class="modal-content glass-panel modal-wide">
+      <div class="modal-header">
+        <h3>📊 Analitik Hubungan Pribadi (100% Offline Local)</h3>
+        <button class="btn-close-modal" id="btnCloseAnalytics">&times;</button>
+      </div>
+      <p class="modal-subtitle">Statistik pola interaksi dan kebiasaan mengobrol kalian berdua. Privasi terjaga, data 100% dihitung lokal di perangkatmu! 🔒</p>
+
+      <!-- 4 Stat Metric Cards -->
+      <div class="analytics-metrics-grid">
+        <div class="analytic-card">
+          <span class="analytic-icon">💬</span>
+          <span class="analytic-value" id="analyticTotalMsgs">0</span>
+          <span class="analytic-label">Total Pesan Mengobrol</span>
+        </div>
+        <div class="analytic-card">
+          <span class="analytic-icon">🎁</span>
+          <span class="analytic-value" id="analyticTotalGifts">0</span>
+          <span class="analytic-label">Hadiah Diberikan</span>
+        </div>
+        <div class="analytic-card">
+          <span class="analytic-icon">🏖️</span>
+          <span class="analytic-value" id="analyticTotalDates">0</span>
+          <span class="analytic-label">Kencan Romantis</span>
+        </div>
+        <div class="analytic-card">
+          <span class="analytic-icon">🔥</span>
+          <span class="analytic-value" id="analyticStreakDays">1 Hari</span>
+          <span class="analytic-label">Relationship Streak</span>
+        </div>
+      </div>
+
+      <!-- Peak Chatting Hours Visual Bar Chart -->
+      <div class="analytics-section">
+        <h4 class="analytics-section-title">⏰ Jam Paling Aktif Mengobrol (Peak Hours 00 - 23 WIB)</h4>
+        <div class="peak-hours-chart" id="peakHoursChart">
+          <!-- 24 hourly bars rendered dynamically -->
+        </div>
+      </div>
+
+      <!-- Mood & Topic Breakdown Grid -->
+      <div class="form-row-grid">
+        <div class="analytics-section">
+          <h4 class="analytics-section-title">🎭 Distribusi Mood Karakter</h4>
+          <div class="mood-breakdown-list" id="moodBreakdownList">
+            <!-- Mood bars rendered dynamically -->
+          </div>
+        </div>
+
+        <div class="analytics-section">
+          <h4 class="analytics-section-title">💬 Topik Percakapan Favorit</h4>
+          <div class="top-topics-list" id="topTopicsList">
+            <!-- Top topics rendered dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CUSTOM CHARACTER CREATOR -->
+  <div class="modal-backdrop" id="characterCreatorModal">
+    <div class="modal-content glass-panel modal-wide">
+      <div class="modal-header">
+        <h3>🎭 Custom Character Creator</h3>
+        <button class="btn-close-modal" id="btnCloseCharacterCreator">&times;</button>
+      </div>
+      <p class="modal-subtitle">Ganti identitas, persona, etnis, dan kepribadian karakter pacar AI kamu! Atau pilih dari preset di bawah:</p>
+
+      <!-- Archetype Presets -->
+      <div class="character-presets-grid" id="charPresetsGrid">
+        <button type="button" class="btn-char-preset active" data-preset="abby">
+          <span class="preset-icon">🌸</span>
+          <div class="preset-info">
+            <span class="preset-name">Abby</span>
+            <span class="preset-desc">Chindo 21 thn • Manja & Bucin</span>
+          </div>
+        </button>
+        <button type="button" class="btn-char-preset" data-preset="mei">
+          <span class="preset-icon">😤</span>
+          <div class="preset-info">
+            <span class="preset-name">Mei</span>
+            <span class="preset-desc">Japanese-Indo 20 thn • Tsundere</span>
+          </div>
+        </button>
+        <button type="button" class="btn-char-preset" data-preset="clarissa">
+          <span class="preset-icon">🍷</span>
+          <div class="preset-info">
+            <span class="preset-name">Clarissa</span>
+            <span class="preset-desc">Career Woman 24 thn • Mature Onee-san</span>
+          </div>
+        </button>
+        <button type="button" class="btn-char-preset" data-preset="evelyn">
+          <span class="preset-icon">🔪</span>
+          <div class="preset-info">
+            <span class="preset-name">Evelyn</span>
+            <span class="preset-desc">Goth 21 thn • Yandere Posesif</span>
+          </div>
+        </button>
+      </div>
+
+      <form id="characterCreatorForm" class="character-creator-form">
+        <div class="form-row-grid">
+          <div class="form-group">
+            <label for="inputCharName">Nama Karakter:</label>
+            <input type="text" id="inputCharName" class="form-control" value="Abby" required>
+          </div>
+          <div class="form-group">
+            <label for="inputCharAge">Usia:</label>
+            <input type="number" id="inputCharAge" class="form-control" value="21" min="18" max="45" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="inputCharEthnicity">Etnis / Asal Daerah:</label>
+          <input type="text" id="inputCharEthnicity" class="form-control" value="Chindo Jakarta" required>
+        </div>
+        <div class="form-group">
+          <label for="selectCharPersona">Mode Persona & Gaya Bicara:</label>
+          <select id="selectCharPersona" class="form-control">
+            <option value="manja">💖 Mode Manja (Bucin, Flirty, Manis & Perhatian)</option>
+            <option value="oneesan">🍷 Mode Dewasa / Big Sister (Onee-san / Mommy)</option>
+            <option value="tsundere">😤 Mode Tsundere (Gengsi Tinggi & Judes Manis)</option>
+            <option value="yandere">🔪 Mode Yandere (Posesif Ekstrem & Obsesif)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="inputCharBackstory">Backstory & Lore Karakter:</label>
+          <textarea id="inputCharBackstory" class="form-control" rows="2" placeholder="Contoh: Mahasiswi DKV semester akhir yang suka anime dan manja...">Cece kesayangan kamu yang paling manja, perhatian, dan bucin 💕</textarea>
+        </div>
+        <button type="submit" class="btn-primary" id="btnSaveCharacter">Terapkan Karakter Baru 💕</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: VIRTUAL GIFT SHOP -->
+  <div class="modal-backdrop" id="giftModal">
+    <div class="modal-content glass-panel modal-wide">
+      <div class="modal-header">
+        <h3>🎁 Kirim Hadiah Manis</h3>
+        <button class="btn-close-modal" id="btnCloseGift">&times;</button>
+      </div>
+      <p class="modal-subtitle">Kirim hadiah favorit untuk meningkatkan Love Meter, membuka mood bahagia, dan memicu reaksi manja! 💕</p>
+      <div class="gifts-grid" id="giftsGrid">
+        <!-- Gift items rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: VIRTUAL DATE SIMULATION (MINI-GAME) -->
+  <div class="modal-backdrop" id="dateSimulationModal">
+    <div class="modal-content glass-panel modal-wide date-modal-content">
+      <div class="modal-header">
+        <h3>🏖️ Kencan Virtual (Date Simulation)</h3>
+        <button class="btn-close-modal" id="btnCloseDate">&times;</button>
+      </div>
+
+      <!-- Screen 1: Location Picker -->
+      <div id="dateLocationPicker">
+        <p class="modal-subtitle">Pilih destinasi kencan romantis impianmu:</p>
+        <div class="date-locations-grid" id="dateLocationsGrid">
+          <!-- 4 Date Locations -->
+        </div>
+      </div>
+
+      <!-- Screen 2: Interactive Date Story Stages -->
+      <div id="dateStageContainer" style="display: none;">
+        <div class="date-stage-header">
+          <span class="date-stage-location-tag" id="dateLocationTag">📍 Cafe PIK</span>
+          <span class="date-stage-step-tag" id="dateStepTag">Tahap 1 / 3</span>
+        </div>
+        <div class="date-story-box">
+          <p class="date-story-narrative" id="dateStoryNarrative">...</p>
+        </div>
+        <div class="date-choices-container" id="dateChoicesContainer">
+          <!-- 3 Choice Buttons -->
+        </div>
+      </div>
+
+      <!-- Screen 3: Date Ending & Summary -->
+      <div id="dateEndingContainer" style="display: none;">
+        <div class="date-ending-card">
+          <div class="date-ending-icon" id="dateEndingIcon">👑</div>
+          <h4 class="date-ending-title" id="dateEndingTitle">Perfect Romantic Date!</h4>
+          <p class="date-ending-desc" id="dateEndingDesc">...</p>
+          <div class="date-ending-reward" id="dateEndingReward">+15 Love Meter Pts ❤️</div>
+          <button type="button" class="btn-primary" id="btnFinishDate">Selesai Kencan 💕</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ACHIEVEMENTS & MILESTONES -->
+  <div class="modal-backdrop" id="achievementsModal">
+    <div class="modal-content glass-panel modal-wide">
+      <div class="modal-header">
+        <h3>🏆 Pencapaian & Milestone Hubungan</h3>
+        <button class="btn-close-modal" id="btnCloseAchievements">&times;</button>
+      </div>
+      <p class="modal-subtitle">Koleksi kenangan dan momen spesial perjalanan cintamu! 💕</p>
+      <div class="achievements-grid" id="achievementsGrid">
+        <!-- Achievement Badges rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: PERSISTENT MEMORY BANK WITH CATEGORIES -->
+  <div class="modal-backdrop" id="memoriesModal">
+    <div class="modal-content glass-panel">
+      <div class="modal-header">
+        <h3>🧠 Ingatan Jangka Panjang AI</h3>
+        <button class="btn-close-modal" id="btnCloseMemories">&times;</button>
+      </div>
+      <p class="modal-subtitle">Detail & fakta penting tentang kamu yang selalu diingat berkat sistem memori RAG berkategori! 💕</p>
+      
+      <!-- Category Filter Tabs -->
+      <div class="memory-categories-tabs" id="memoryCategoriesTabs">
+        <button class="cat-tab active" data-category="Semua">Semua ✨</button>
+        <button class="cat-tab" data-category="Personal">👤 Personal</button>
+        <button class="cat-tab" data-category="Love">💕 Love</button>
+        <button class="cat-tab" data-category="Family">👨‍👩‍👧 Family</button>
+        <button class="cat-tab" data-category="Work">💼 Work</button>
+        <button class="cat-tab" data-category="Sexual">🔥 Spicy</button>
+        <button class="cat-tab" data-category="Trauma">🩹 Trauma</button>
+      </div>
+
+      <div class="memories-list" id="memoriesList">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CUSTOM PAP GENERATOR (PROGRESSIVE UNDRESS ENABLED) -->
+  <div class="modal-backdrop" id="customPapModal">
+    <div class="modal-content glass-panel">
+      <div class="modal-header">
+        <h3>✨ Minta PAP Foto (Progressive Undress System)</h3>
+        <button class="btn-close-modal" id="btnCloseCustomPap">&times;</button>
+      </div>
+      <p class="modal-subtitle">Tingkat keterbukaan pakaian terbuka bertahap sesuai Love Meter kamu! Makin bucin, makin berani gaya fotonya 💕</p>
+
+      <div class="preset-chips-grid" id="presetChipsGrid">
+        <button class="btn-preset-chip" data-min-love="0" data-prompt="wearing chic casual stylish daily outfit in trendy PIK cafe, natural soft daylight" data-caption="Outfit santai aku hari ini nih beb! Cantik ga? ☕💕">
+          ☕ Outfit Cafe Santai (Level 1 • Bebas)
+        </button>
+        <button class="btn-preset-chip" data-min-love="30" data-prompt="wearing tight athletic sports bra and yoga shorts in modern aesthetic gym, smiling confidently" data-caption="Habis workout di gym nih beb... seger bgt! 💪✨">
+          👚 Baju Gym Ketat (Level 2 • 30 Pts)
+        </button>
+        <button class="btn-preset-chip" data-min-love="60" data-prompt="wrapped tightly in a single white bath towel after shower, damp straight hair, bare shoulders and collarbones, steamy luxury bathroom" data-caption="Baru selesai mandi nih beb, seger bgt tp dingin... pengen dipeluk 🧖‍♀️💋">
+          🧖‍♀️ Handuk Mandi (Level 3 • 60 Pts)
+        </button>
+        <button class="btn-preset-chip" data-min-love="60" data-prompt="wearing stylish pastel bikini relaxing by resort infinity pool in Bali, golden hour sunlight" data-caption="Lagi renang santai di pool... seger bgt airnya! 👙💦">
+          👙 Bikini di Kolam (Level 3 • 60 Pts)
+        </button>
+        <button class="btn-preset-chip" data-min-love="85" data-prompt="wearing elegant black silk lace lingerie camisole top, sitting gracefully on white bed in dim bedroom" data-caption="Khusus buat kamu nih... lingerie renda hitam favorit kamu beb 😏🫦">
+          🖤 Lingerie Renda (Level 4 • 85 Pts)
+        </button>
+        <button class="btn-preset-chip" data-min-love="85" data-prompt="lying in bed gracefully covered only by soft white bed sheets, bare smooth shoulders, cozy morning lighting, seductive flirty smile" data-caption="Masih rebahan di kasur nih cuma ketutup selimut doang... mager bgt 🙈🔥">
+          🛏️ Semi-Naked di Kasur (Level 4 • 85 Pts)
+        </button>
+      </div>
+
+      <form id="customPapForm" class="custom-pap-form">
+        <label for="inputCustomPrompt">Atau Ketik Outfit / Suasana Sendiri:</label>
+        <input 
+          type="text" 
+          id="inputCustomPrompt" 
+          class="form-control" 
+          placeholder="Contoh: baju cosplay maid / piyama sutra tipis / dress pantai merah..."
+        >
+        <button type="submit" class="btn-primary" id="btnSubmitCustomPap">
+          Generate PAP Sekarang 💕
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: PHOTO GALLERY (PAP) -->
+  <div class="modal-backdrop" id="galleryModal">
+    <div class="modal-content glass-panel modal-wide">
+      <div class="modal-header">
+        <h3>📸 Koleksi Semua Foto PAP</h3>
+        <button class="btn-close-modal" id="btnCloseGallery">&times;</button>
+      </div>
+      <p class="modal-subtitle">Semua foto & selfie yang digenerate tersimpan permanen di database server! 💕</p>
+      
+      <div class="gallery-toolbar">
+        <button class="btn-primary-sm" id="btnOpenCustomFromGallery">✨ Generate PAP Gaya Bebas</button>
+      </div>
+
+      <div class="gallery-grid" id="galleryGrid">
+        <!-- Gallery cards rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SETTINGS, BACKUP, ENCRYPTION & CUSTOM PROMPT INJECTION -->
+  <div class="modal-backdrop" id="settingsModal">
+    <div class="modal-content glass-panel modal-wide">
+      <div class="modal-header">
+        <h3>⚙️ Pengaturan, Backup & Personalisasi</h3>
+        <button class="btn-close-modal" id="btnCloseSettings">&times;</button>
+      </div>
+
+      <form id="settingsForm" class="settings-form">
+        <div class="form-row-grid">
+          <div class="form-group">
+            <label for="selectTheme">Pilihan Tema Tampilan:</label>
+            <select id="selectTheme" class="form-control">
+              <option value="midnight" selected>🌙 Midnight Luxury (Dark Neon Mewah)</option>
+              <option value="cozy-morning">☀️ Cozy Morning (Pastel Cream & Warm Light)</option>
+              <option value="cyberpunk">⚡ Neon Cyberpunk (Electric Cyan & Magenta)</option>
+              <option value="romantic-rose">🌹 Romantic Rose (Velvet Ruby & Rose Gold)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="inputUserName">Nama Panggilanmu:</label>
+            <input type="text" id="inputUserName" class="form-control" placeholder="Contoh: Sayang / Beb / Nama Aslimu">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="selectModel">Otak AI (Multi-Model Routing):</label>
+          <select id="selectModel" class="form-control">
+            <option value="gemini-2.5-flash" selected>⚡ Gemini 2.5 Flash (Paling Cepat, Lancar & Alami - Rekomendasi)</option>
+            <option value="gemini-2.5-pro">💎 Gemini 2.5 Pro (Deep Thinking & Emosional Mendalam)</option>
+            <option value="gemini-3.1-pro">🚀 Gemini 3.1 Pro (Paling Cerdas & Multimodal)</option>
+            <option value="ollama-llama3">🦙 Local Ollama Llama 3 / Mistral (Uncensored / Tanpa Batas Filter)</option>
+          </select>
+        </div>
+
+        <!-- Custom Prompt Injection Textarea -->
+        <div class="form-group">
+          <label for="inputCustomPromptInjection">✍️ Custom System Prompt Injection:</label>
+          <textarea 
+            id="inputCustomPromptInjection" 
+            class="form-control" 
+            rows="3" 
+            placeholder="Tulis instruksi khusus tambahan untuk otak AI di sini (Contoh: 'Karakter suka cosplay maid saat kencan', 'Panggil user dengan sebutan Master', 'Punya hobi main game Genshin')..."
+          ></textarea>
+          <small class="form-hint">Instruksi ini akan di-inject langsung ke dalam Master Prompt AI pada setiap pesan.</small>
+        </div>
+
+        <!-- Backup & Restore Center -->
+        <div class="backup-restore-box">
+          <label class="backup-label">📦 Backup & Restore Save Data Hubungan:</label>
+          <p class="backup-subtext">Cadangkan seluruh riwayat chat, memori RAG, love meter, dan foto ke file JSON untuk dipindahkan ke device lain.</p>
+          <div class="backup-buttons-row">
+            <button type="button" class="btn-secondary" id="btnExportBackup">
+              📥 Download Backup (.json)
+            </button>
+            <button type="button" class="btn-secondary" id="btnTriggerImport">
+              📤 Restore dari Backup (.json)
+            </button>
+            <input type="file" id="inputImportBackup" accept=".json" style="display: none;">
+          </div>
+        </div>
+
+        <!-- Privacy, PIN Lock & E2E Encryption -->
+        <div class="form-group">
+          <label class="checkbox-label" style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="checkbox" id="checkboxEnablePin">
+            <span>🔒 Aktifkan Kunci PIN Pribadi (Personal Lock)</span>
+          </label>
+          <input type="password" id="inputPinCode" class="form-control" placeholder="PIN 4 Digit (Contoh: 1234)" maxlength="6" style="margin-top: 6px; display: none;">
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-label" style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="checkbox" id="checkboxEnableEncryption">
+            <span>🛡️ Enkripsi End-to-End Lokal (AES-256-GCM)</span>
+          </label>
+          <small class="form-hint">Mengamankan data chat & ingatan dengan kunci kriptografi berbasis PIN kamu.</small>
+        </div>
+
+        <div class="modal-actions-col">
+          <button type="submit" class="btn-primary">Simpan Pengaturan</button>
+          <div class="modal-actions-row">
+            <button type="button" class="btn-secondary" id="btnResetRelationship">🔄 Mulai dari Awal (Baru Kenal)</button>
+            <button type="button" class="btn-secondary" id="btnSettingsClearChat">🗑️ Hapus Chat</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: PHOTO PREVIEW FULLSCREEN -->
+  <div class="modal-backdrop" id="previewModal">
+    <div class="preview-content">
+      <button class="btn-close-preview" id="btnClosePreview">&times;</button>
+      <img src="" alt="Full Preview" id="previewImg">
+      <p class="preview-caption" id="previewCaption"></p>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

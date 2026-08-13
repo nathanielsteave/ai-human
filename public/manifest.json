@@ -1,0 +1,24 @@
+{
+  "name": "Abby - Pacar AI Chindo Cantik & Manja",
+  "short_name": "Abby AI",
+  "description": "Aplikasi pacar AI virtual yang manis, perhatian, manja, dan seru diajak chatting layaknya nyata.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#06030a",
+  "theme_color": "#ff2a6d",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/assets/avatar.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/avatar.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
